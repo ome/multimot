@@ -1,0 +1,93 @@
+#!/usr/bin/env python
+
+import sys
+import os
+
+lib = os.path.expanduser("~/OMERO.server/lib/python")
+if not os.path.isdir(lib):
+    sys.exit("cannot import libraries from %s" % lib)
+sys.path.insert(0, lib)
+
+import uuid
+
+import scipy.io
+import omero
+from omero.cli import CLI
+from omero.cli import Parser
+from omero.rtypes import unwrap
+
+
+def build_table(shared_res, utrack_out_fn):
+    mat = scipy.io.loadmat(utrack_out_fn)
+    trackedFeatureIndx = mat['trackedFeatureIndx']
+    trackedFeatureInfo = mat['trackedFeatureInfo']
+    n_rows = trackedFeatureIndx.shape[0]
+    assert trackedFeatureInfo.shape[0] == n_rows
+    assert trackedFeatureInfo.shape[1] == 8 * trackedFeatureIndx.shape[1]
+    #--
+    table_name = 'utrack_%s' % uuid.uuid4()
+    print "creating table: %s" % table_name
+    columns = [
+        omero.grid.LongArrayColumn(
+            'trackedFeatureIndx', 'Array', trackedFeatureIndx.shape[1]
+        ),
+        omero.grid.DoubleArrayColumn(
+            'trackedFeatureInfo', 'Array', trackedFeatureInfo.shape[1]
+        ),
+    ]
+    table = shared_res.newTable(1, table_name)
+    table.initialize(columns)
+    table.addData([
+        omero.grid.LongArrayColumn(
+            'trackedFeatureIndx', 'Array', trackedFeatureIndx.shape[1],
+            list(trackedFeatureIndx)
+        ),
+        omero.grid.DoubleArrayColumn(
+            'trackedFeatureInfo', 'Array', trackedFeatureInfo.shape[1],
+            list(trackedFeatureInfo)
+        ),
+    ])
+    table.close()
+    return table
+
+
+def link_table(update_svc, table, img_id):
+    of_id = unwrap(table.getOriginalFile().id)
+    ann = omero.model.FileAnnotationI()
+    ann.setFile(omero.model.OriginalFileI(of_id, False))
+    ann = update_svc.saveAndReturnObject(ann)
+    ann_id = unwrap(ann.id)
+    link = omero.model.ImageAnnotationLinkI()
+    link.setParent(omero.model.ImageI(img_id, False))
+    link.setChild(omero.model.FileAnnotationI(ann_id, False))
+    return update_svc.saveAndReturnObject(link)
+
+
+def main():
+    parser = Parser()
+    parser.add_login_arguments()
+    parser.add_argument("utrack_results", metavar="RES_FILE",
+                        help="u-track results file")
+    parser.add_argument("img_id", metavar="IMG_ID",
+                        help="ID of image to link table to")
+    args = parser.parse_args()
+
+    cli = CLI()
+    cli.loadplugins()
+    client = cli.conn(args)
+    admin_svc = client.sf.getAdminService()
+    shared_res = client.sf.sharedResources()
+    update_svc = client.sf.getUpdateService()
+
+    try:
+        g = admin_svc.getGroup(admin_svc.getEventContext().groupId)
+        print "current group: %s[%d]" % (unwrap(g.getName()), unwrap(g.id))
+        table = build_table(shared_res, args.utrack_results)
+        link = link_table(update_svc, table, args.img_id)
+        print "ImageAnnotationLink:%d" % unwrap(link.id)
+    finally:
+        cli.close()
+
+
+if __name__ == "__main__":
+    main()
