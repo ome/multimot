@@ -10,6 +10,7 @@ sys.path.insert(0, lib)
 
 import uuid
 
+import numpy as np
 import scipy.io
 import omero
 from omero.cli import CLI
@@ -17,10 +18,20 @@ from omero.cli import Parser
 from omero.rtypes import unwrap
 
 
-def build_table(shared_res, utrack_out_fn):
-    mat = scipy.io.loadmat(utrack_out_fn)
-    trackedFeatureIndx = mat['trackedFeatureIndx']
-    trackedFeatureInfo = mat['trackedFeatureInfo']
+def build_table(shared_res, utrack_out, csv=False, delimiter=","):
+    if csv:
+        trackedFeatureIndx = np.loadtxt(
+            os.path.join(utrack_out, "trackedFeatureIndx.csv"),
+            delimiter=delimiter, dtype="<u2"
+        )
+        trackedFeatureInfo = np.loadtxt(
+            os.path.join(utrack_out, "trackedFeatureInfo.csv"),
+            delimiter=delimiter, dtype="<f8"
+        )
+    else:
+        mat = scipy.io.loadmat(utrack_out)
+        trackedFeatureIndx = mat['trackedFeatureIndx']
+        trackedFeatureInfo = mat['trackedFeatureInfo']
     n_rows = trackedFeatureIndx.shape[0]
     assert trackedFeatureInfo.shape[0] == n_rows
     assert trackedFeatureInfo.shape[1] == 8 * trackedFeatureIndx.shape[1]
@@ -40,11 +51,11 @@ def build_table(shared_res, utrack_out_fn):
     table.addData([
         omero.grid.LongArrayColumn(
             'trackedFeatureIndx', 'Array', trackedFeatureIndx.shape[1],
-            list(trackedFeatureIndx)
+            trackedFeatureIndx.tolist()
         ),
         omero.grid.DoubleArrayColumn(
             'trackedFeatureInfo', 'Array', trackedFeatureInfo.shape[1],
-            list(trackedFeatureInfo)
+            trackedFeatureInfo.tolist()
         ),
     ])
     table.close()
@@ -67,9 +78,13 @@ def main():
     parser = Parser()
     parser.add_login_arguments()
     parser.add_argument("utrack_results", metavar="RES_FILE",
-                        help="u-track results file")
+                        help="u-track results file (or dir for csv dumps)")
     parser.add_argument("img_id", metavar="IMG_ID",
                         help="ID of image to link table to")
+    parser.add_argument("--csv", action="store_true",
+                        help="read data from csv dumps instead of .mat")
+    parser.add_argument("-d", "--delimiter", metavar="STRING", default=",",
+                        help="field delimiter (ignored if reading from .mat)")
     args = parser.parse_args()
 
     cli = CLI()
@@ -82,7 +97,8 @@ def main():
     try:
         g = admin_svc.getGroup(admin_svc.getEventContext().groupId)
         print "current group: %s[%d]" % (unwrap(g.getName()), unwrap(g.id))
-        table = build_table(shared_res, args.utrack_results)
+        table = build_table(shared_res, args.utrack_results, csv=args.csv,
+                            delimiter=args.delimiter)
         link = link_table(update_svc, table, args.img_id)
         print "ImageAnnotationLink:%d" % unwrap(link.id)
     finally:
