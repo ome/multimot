@@ -1,0 +1,139 @@
+#!/usr/bin/env python
+
+"""
+Loads csv data into an OMERO table and links it to an image.
+
+Assumes table size << memory.
+"""
+
+import sys
+import os
+
+lib = os.path.expanduser("~/OMERO.server/lib/python")
+if not os.path.isdir(lib):
+    sys.exit("cannot import libraries from %s" % lib)
+sys.path.insert(0, lib)
+
+import uuid
+import csv
+from collections import OrderedDict
+
+import omero
+from omero.cli import CLI
+from omero.cli import Parser
+from omero.rtypes import unwrap
+
+
+SAMPLE_SIZE = 2**20
+PREVIEW_SIZE = 10
+
+
+def sniff_dialect(csv_fn):
+    with open(csv_fn) as f:
+        return csv.Sniffer().sniff(f.read(SAMPLE_SIZE))
+
+
+def _get_text_data(csv_fn, dialect=None):
+    if dialect is None:
+        dialect = sniff_dialect(csv_fn)
+    with open(csv_fn) as f:
+        reader = csv.reader(f, dialect)
+        fields = reader.next()
+        data = OrderedDict((_, []) for _ in fields)
+        for row in reader:
+            assert len(row) >= len(fields)
+            for i, f in enumerate(fields):
+                data[f].append(row[i])
+    return data
+
+
+def _convert_types(data):
+    type_map = {}
+    for field, values in data.iteritems():
+        try:
+            data[field] = map(int, values)
+        except ValueError:
+            try:
+                data[field] = map(float, values)
+            except ValueError:
+                type_map[field] = omero.grid.StringColumn
+            else:
+                type_map[field] = omero.grid.DoubleColumn
+        else:
+            type_map[field] = omero.grid.LongColumn
+    return type_map
+
+
+def build_table(shared_res, csv_fn, tag='', preview=False):
+    data = _get_text_data(csv_fn)
+    type_map = _convert_types(data)
+    if preview:
+        size = min(PREVIEW_SIZE, len(data.itervalues().next()))
+        print ["%s(%s)" % (_, type_map[_].__name__) for _ in data]
+        for i in xrange(size):
+            print [_[i] for _ in data.itervalues()]
+        sys.exit(0)
+    #--
+    table_name = uuid.uuid4()
+    if tag:
+        table_name = '%s-%s' % (tag, table_name)
+    print "creating table: %s" % table_name
+    columns = []
+    for field in data:
+        columns.append([field, field])
+        if type_map[field] is omero.grid.StringColumn:
+            columns[-1].append(max(len(_) for _ in data[field]))
+    table = shared_res.newTable(1, table_name)
+    table.initialize([type_map[_](*args) for _, args in zip(data, columns)])
+    #--
+    for i, v in enumerate(data.itervalues()):
+        columns[i].append(v)
+    table.addData([type_map[_](*args) for _, args in zip(data, columns)])
+    table.close()
+    return table
+
+
+def link_table(update_svc, table, img_id):
+    of_id = unwrap(table.getOriginalFile().id)
+    ann = omero.model.FileAnnotationI()
+    ann.setFile(omero.model.OriginalFileI(of_id, False))
+    ann = update_svc.saveAndReturnObject(ann)
+    ann_id = unwrap(ann.id)
+    link = omero.model.ImageAnnotationLinkI()
+    link.setParent(omero.model.ImageI(img_id, False))
+    link.setChild(omero.model.FileAnnotationI(ann_id, False))
+    return update_svc.saveAndReturnObject(link)
+
+
+def main():
+    parser = Parser()
+    parser.add_login_arguments()
+    parser.add_argument("csv_fn", metavar="CSV_FILE", help="csv file")
+    parser.add_argument("img_id", metavar="IMG_ID",
+                        help="ID of image to link table to")
+    parser.add_argument("--tag", metavar="STRING", help="table tag")
+    parser.add_argument("--preview", action="store_true",
+                        help="show table preview and exit")
+    args = parser.parse_args()
+
+    cli = CLI()
+    cli.loadplugins()
+    client = cli.conn(args)
+    admin_svc = client.sf.getAdminService()
+    shared_res = client.sf.sharedResources()
+    update_svc = client.sf.getUpdateService()
+
+    try:
+        g = admin_svc.getGroup(admin_svc.getEventContext().groupId)
+        print "current group: %s[%d]" % (unwrap(g.getName()), unwrap(g.id))
+        table = build_table(
+            shared_res, args.csv_fn, tag=args.tag, preview=args.preview
+        )
+        link = link_table(update_svc, table, args.img_id)
+        print "ImageAnnotationLink:%d" % unwrap(link.id)
+    finally:
+        cli.close()
+
+
+if __name__ == "__main__":
+    main()
