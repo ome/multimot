@@ -24,20 +24,12 @@ from omero.cli import Parser
 from omero.rtypes import unwrap
 
 
-SAMPLE_SIZE = 2**20
 PREVIEW_SIZE = 10
 
 
-def sniff_dialect(csv_fn):
+def _get_text_data(csv_fn, delimiter="\t"):
     with open(csv_fn) as f:
-        return csv.Sniffer().sniff(f.read(SAMPLE_SIZE))
-
-
-def _get_text_data(csv_fn, dialect=None):
-    if dialect is None:
-        dialect = sniff_dialect(csv_fn)
-    with open(csv_fn) as f:
-        reader = csv.reader(f, dialect)
+        reader = csv.reader(f, delimiter=delimiter)
         fields = reader.next()
         data = OrderedDict((_, []) for _ in fields)
         for row in reader:
@@ -64,8 +56,8 @@ def _convert_types(data):
     return type_map
 
 
-def build_table(shared_res, csv_fn, tag='', preview=False):
-    data = _get_text_data(csv_fn)
+def build_table(shared_res, csv_fn, delimiter="\t", tag="", preview=False):
+    data = _get_text_data(csv_fn, delimiter=delimiter)
     type_map = _convert_types(data)
     if preview:
         size = min(PREVIEW_SIZE, len(data.itervalues().next()))
@@ -74,9 +66,9 @@ def build_table(shared_res, csv_fn, tag='', preview=False):
             print [_[i] for _ in data.itervalues()]
         sys.exit(0)
     #--
-    table_name = uuid.uuid4()
+    table_name = "%s.h5" % uuid.uuid4()
     if tag:
-        table_name = '%s-%s' % (tag, table_name)
+        table_name = "%s-%s" % (tag, table_name)
     print "creating table: %s" % table_name
     columns = []
     for field in data:
@@ -111,6 +103,8 @@ def main():
     parser.add_argument("csv_fn", metavar="CSV_FILE", help="csv file")
     parser.add_argument("img_id", metavar="IMG_ID",
                         help="ID of image to link table to")
+    parser.add_argument("-d", "--delimiter", metavar="STRING", default="\t",
+                        help="field delimiter (default: tab character)")
     parser.add_argument("--tag", metavar="STRING", help="table tag")
     parser.add_argument("--preview", action="store_true",
                         help="show table preview and exit")
@@ -127,7 +121,8 @@ def main():
         g = admin_svc.getGroup(admin_svc.getEventContext().groupId)
         print "current group: %s[%d]" % (unwrap(g.getName()), unwrap(g.id))
         table = build_table(
-            shared_res, args.csv_fn, tag=args.tag, preview=args.preview
+            shared_res, args.csv_fn,
+            delimiter=args.delimiter, tag=args.tag, preview=args.preview
         )
         link = link_table(update_svc, table, args.img_id)
         print "ImageAnnotationLink:%d" % unwrap(link.id)
