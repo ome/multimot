@@ -1,0 +1,53 @@
+#!/usr/bin/env python
+
+"""\
+Convert u-track output from .mat to .csv.
+"""
+
+import sys
+import os
+import errno
+import argparse
+
+import numpy as np
+import scipy.io
+
+
+def csv_dump(mat, out_d, delimiter=","):
+    for name, arr in mat.iteritems():
+        if name.startswith("__"):
+            continue
+        out_fn = os.path.join(out_d, "%s.csv" % name)
+        fmt = "%d" if issubclass(arr.dtype.type, np.integer) else "%.18e"
+        print "writing to %s" % out_fn
+        np.savetxt(out_fn, arr, fmt=fmt, delimiter=delimiter)
+
+
+def make_parser():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('mat_fn', metavar="MAT_FILE", help="input .mat file")
+    parser.add_argument("-o", "--out-dir", metavar="DIR",
+                        help="output directory", default=os.getcwd())
+    parser.add_argument("-d", "--delimiter", metavar="STRING",
+                        help="field delimiter", default=",")
+    return parser
+
+
+def main(argv):
+    parser = make_parser()
+    args = parser.parse_args(argv[1:])
+    mat = scipy.io.loadmat(args.mat_fn)
+    try:
+        print mat["__header__"]
+    except KeyError:
+        pass
+    try:
+        os.makedirs(args.out_dir)
+    except OSError as e:
+        if e.errno == errno.EEXIST:
+            pass
+    csv_dump(mat, args.out_dir, delimiter=args.delimiter)
+
+
+if __name__ == "__main__":
+    main(sys.argv)
