@@ -1,0 +1,61 @@
+#!/usr/bin/env python
+
+"""\
+Rectify naughty zips.
+"""
+
+import sys
+import os
+import zipfile
+import argparse
+
+from slugify import slugify
+
+
+def slugify_path(path):
+    head, tail = os.path.splitext(path)
+    return os.path.join(*[slugify(_) for _ in os.path.split(head)]) + tail
+
+
+def make_parser():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('zip_fn', metavar="ZIP_FILE", help="input .zip file")
+    parser.add_argument("-v", "--verbose", action="store_true")
+    return parser
+
+
+def main(argv):
+    parser = make_parser()
+    args = parser.parse_args(argv[1:])
+    #--
+    clash_map = {}
+    with zipfile.ZipFile(sys.argv[1]) as zip:
+        for name in zip.namelist():
+            name = name.strip()
+            if name.startswith(os.sep):
+                sys.stderr.write(
+                    "WARNING: stripping absolute path spec from %r\n" % (name,)
+                )
+                name = name.lstrip(os.sep)
+            if not name:
+                continue
+            slugified = slugify_path(name)
+            if slugified.endswith("/"):
+                os.makedirs(slugified)
+            else:
+                if args.verbose:
+                    print "writing to %r" % (slugified,)
+                with open(slugified, "w") as fo:
+                    fo.write(zip.read(name))
+                clash_map.setdefault(slugified, []).append(name)
+    #-- FIXME: do the following check *before* unzipping --
+    for slugified, names in clash_map.iteritems():
+        if len(names) > 1:
+            sys.stderr.write("DATA LOSS!\n")
+            sys.stderr.write("Names that map to the same target name:\n")
+            for n in sorted(names):
+                sys.stderr.write("  %s -> %s\n" % (n, slugified))
+
+
+if __name__ == "__main__":
+    main(sys.argv)
