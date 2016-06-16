@@ -63,7 +63,7 @@ def write_screen(data_dir, plate, outf, screen=None):
         try:
             subdir = os.path.join(data_dir, subd_map[idx])
         except KeyError:
-            sys.stderr.write("WARNING: no subdir for well #%d\n" % idx)
+            pass
         else:
             for run in xrange(FIELDS):
                 pattern = get_pattern(subdir)
@@ -85,6 +85,7 @@ def main(argv):
     args = parse_cl(argv)
     if args.output:
         outf = open(args.output, "w")
+        print "writing to %s" % args.output
     else:
         outf = sys.stdout
     write_screen(args.dir, args.plate, outf, screen=args.screen)
