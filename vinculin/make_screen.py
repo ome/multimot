@@ -26,6 +26,8 @@ PATTERNS = [
     # separate channels). Channel tags are C, Y, P. There's also a CY
     # channel, but it's computed from C and Y (mean value).
     re.compile(r"^(.+)([CYP])(.+)t(?P<t>\d+)(.+)$"),
+    # "*/BilatFilteredNonStand/RatioIm/": RGB movies
+    re.compile(r"^(.+)t(?P<t>\d+)(.+)$"),
 ]
 
 
@@ -67,6 +69,8 @@ def get_pattern(subdir, level=0):
         return "".join([fixed[0], t_block, fixed[1], "c<1-3>", ".tif"])
     elif level == 1:
         return "".join([fixed[0], "<C,Y,P>", fixed[1], t_block, fixed[2]])
+    elif level == 2:
+        return "".join([fixed[0], t_block, fixed[1]])
 
 
 def write_screen(data_dir, plate, outf, screen=None, level=0):
@@ -81,8 +85,10 @@ def write_screen(data_dir, plate, outf, screen=None, level=0):
         except KeyError:
             pass
         else:
-            if level == 1:
+            if level > 0:
                 subdir = os.path.join(subdir, "BilatFilteredNonStand")
+            if level > 1:
+                subdir = os.path.join(subdir, "RatioIm")
             for run in xrange(FIELDS):
                 pattern = get_pattern(subdir, level=level)
                 field_values.append(os.path.join(subdir, pattern))
