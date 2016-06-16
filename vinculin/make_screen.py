@@ -12,6 +12,9 @@ except ImportError:
     sys.exit("ERROR: this script requires pyidr, currently part of:\n"
              "https://github.com/openmicroscopy/idr-metadata")
 
+# Although the paper mentions 96-wells plates, cells were imaged
+# separately. Also, different cells can come from the same well. Here
+# we map each cell to a well in a 96-well plate to aid visualization.
 ROWS = 8
 COLUMNS = 12
 FIELDS = 1
@@ -19,9 +22,13 @@ FIELDS = 1
 FN_PATTERN = re.compile(r"^(.+)t(\d+)(.+)c(\d).tif$")
 
 
-# currently this is completely arbitrary
 def get_subdir_mapping(data_dir):
-    subdirs = os.listdir(data_dir)
+    """
+    Map cell IDs to subdirs. Trailing numeric IDs are in the 1-96
+    range, so they can directly map to wells in our "virtual" plate.
+    """
+    subdirs = [_ for _ in os.listdir(data_dir)
+               if os.path.isdir(os.path.join(data_dir, _))]
     cell_ids = [int(_.strip().rsplit(None, 1)[-1]) for _ in subdirs]
     assert len(set(cell_ids)) == len(subdirs)
     return dict(zip(cell_ids, subdirs))
@@ -38,6 +45,7 @@ def get_pattern(subdir):
     start, mid = all_groups[0][0], all_groups[0][2]
     for g in all_groups:
         assert g[0] == start and g[2] == mid
+    # numeric IDs are fixed-width, so we can just sort them as strings
     all_groups.sort(key=itemgetter(3))
     all_groups.sort(key=itemgetter(1))
     t_min, c_min = all_groups[0][1], all_groups[0][3]
