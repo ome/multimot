@@ -3,7 +3,6 @@
 import sys
 import os
 import re
-from operator import itemgetter
 from argparse import ArgumentParser
 
 try:
@@ -19,7 +18,15 @@ ROWS = 8
 COLUMNS = 12
 FIELDS = 1
 
-FN_PATTERN = re.compile(r"^(.+)t(\d+)(.+)c(\d).tif$")
+PATTERNS = [
+    # top-level: unprocessed cell movies (greyscale, separate
+    # channels). Channel tags are 1, 2, 3.
+    re.compile(r"^(.+)t(?P<t>\d+)(.+)c([123]).tif$"),
+    # "*/BilatFilteredNonStand/": bilateral filtered data (greyscale,
+    # separate channels). Channel tags are C, Y, P. There's also a CY
+    # channel, but it's computed from C and Y (mean value).
+    re.compile(r"^(.+)([CYP])(.+)t(?P<t>\d+)(.+)$"),
+]
 
 
 def get_subdir_mapping(data_dir):
@@ -34,30 +41,39 @@ def get_subdir_mapping(data_dir):
     return dict(zip(cell_ids, subdirs))
 
 
-def get_pattern(subdir):
+def get_pattern(subdir, level=0):
     fnames = [_ for _ in os.listdir(subdir) if _.endswith(".tif")]
-    all_groups = []
+    if level == 1:
+        fnames = [_ for _ in fnames if not _.startswith("bilaf_CY")]
+    all_groups, t_indices = [], []
     for fn in fnames:
         try:
-            all_groups.append(FN_PATTERN.match(fn).groups())
-        except AttributeError:
+            p = PATTERNS[level]
+        except IndexError:
+            raise ValueError("Unsupported level: %d" % level)
+        m = p.match(fn)
+        if m is None:
             sys.stderr.write("WARNING: %s: unexpected pattern\n" % fn)
-    start, mid = all_groups[0][0], all_groups[0][2]
+        else:
+            t_indices.append(m.groupdict()["t"])
+            all_groups.append(m.groups())
+    fixed = all_groups[0][::2]
     for g in all_groups:
-        assert g[0] == start and g[2] == mid
-    # numeric IDs are fixed-width, so we can just sort them as strings
-    all_groups.sort(key=itemgetter(3))
-    all_groups.sort(key=itemgetter(1))
-    t_min, c_min = all_groups[0][1], all_groups[0][3]
-    t_max, c_max = all_groups[-1][1], all_groups[-1][3]
-    return "".join([start, "t<%s-%s>" % (t_min, t_max),
-                    mid, "c<%s-%s>" % (c_min, c_max), ".tif"])
+        assert g[::2] == fixed
+    # check for fixed-width
+    assert len(set(map(len, t_indices))) == 1
+    t_block = "t<%s-%s>" % (min(t_indices), max(t_indices))
+    if level == 0:
+        return "".join([fixed[0], t_block, fixed[1], "c<1-3>", ".tif"])
+    elif level == 1:
+        return "".join([fixed[0], "<C,Y,P>", fixed[1], t_block, fixed[2]])
 
 
-def write_screen(data_dir, plate, outf, screen=None):
+def write_screen(data_dir, plate, outf, screen=None, level=0):
     kwargs = {"screen_name": screen} if screen else {}
     writer = ScreenWriter(plate, ROWS, COLUMNS, FIELDS, **kwargs)
     subd_map = get_subdir_mapping(data_dir)
+    extra_kv = {"AxisTypes": "CT"} if level == 1 else None
     for idx in xrange(ROWS * COLUMNS):
         field_values = []
         try:
@@ -65,10 +81,12 @@ def write_screen(data_dir, plate, outf, screen=None):
         except KeyError:
             pass
         else:
+            if level == 1:
+                subdir = os.path.join(subdir, "BilatFilteredNonStand")
             for run in xrange(FIELDS):
-                pattern = get_pattern(subdir)
+                pattern = get_pattern(subdir, level=level)
                 field_values.append(os.path.join(subdir, pattern))
-        writer.add_well(field_values)
+        writer.add_well(field_values, extra_kv=extra_kv)
     writer.write(outf)
 
 
@@ -78,6 +96,8 @@ def parse_cl(argv):
     parser.add_argument("-o", "--output", metavar="FILE", help="output file")
     parser.add_argument("-p", "--plate", metavar="PLATE", help="plate name")
     parser.add_argument("-s", "--screen", metavar="SCREEN", help="screen name")
+    parser.add_argument("-l", "--level", metavar="INT", type=int, default=0,
+                        help="subdirectory level")
     return parser.parse_args(argv[1:])
 
 
@@ -88,7 +108,9 @@ def main(argv):
         print "writing to %s" % args.output
     else:
         outf = sys.stdout
-    write_screen(args.dir, args.plate, outf, screen=args.screen)
+    write_screen(
+        args.dir, args.plate, outf, screen=args.screen, level=args.level
+    )
     if outf is not sys.stdout:
         outf.close()
 
