@@ -43,17 +43,16 @@ def get_subdir_mapping(data_dir):
     return dict(zip(cell_ids, subdirs))
 
 
-def get_pattern(subdir, level=0):
-    fnames = [_ for _ in os.listdir(subdir) if _.endswith(".tif")]
-    if level == 1:
-        fnames = [_ for _ in fnames if not _.startswith("bilaf_CY")]
+def get_block_info(fnames, re_pattern):
+    """
+    All filename patterns have fixed (i.e., that do not change from
+    one file to another) and variable blocks. One of the variable
+    blocks is always a T block, and the number of time points depends
+    on the subdir.
+    """
     all_groups, t_indices = [], []
     for fn in fnames:
-        try:
-            p = PATTERNS[level]
-        except IndexError:
-            raise ValueError("Unsupported level: %d" % level)
-        m = p.match(fn)
+        m = re_pattern.match(fn)
         if m is None:
             sys.stderr.write("WARNING: %s: unexpected pattern\n" % fn)
         else:
@@ -65,6 +64,18 @@ def get_pattern(subdir, level=0):
     # check for fixed-width
     assert len(set(map(len, t_indices))) == 1
     t_block = "t<%s-%s>" % (min(t_indices), max(t_indices))
+    return t_block, fixed
+
+
+def get_pattern(subdir, level=0):
+    try:
+        p = PATTERNS[level]
+    except IndexError:
+        raise ValueError("Unsupported level: %d" % level)
+    fnames = [_ for _ in os.listdir(subdir) if _.endswith(".tif")]
+    if level == 1:
+        fnames = [_ for _ in fnames if not _.startswith("bilaf_CY")]
+    t_block, fixed = get_block_info(fnames, p)
     if level == 0:
         return "".join([fixed[0], t_block, fixed[1], "c<1-3>", ".tif"])
     elif level == 1:
