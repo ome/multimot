@@ -30,6 +30,18 @@ PATTERNS = [
     re.compile(r"^(.+)t(?P<t>\d+)(.+)$"),
 ]
 
+SINGLE_C = re.compile(r"^(.+)t(?P<t>\d+)(.+)$")
+MULTI_C = re.compile(r"^(.+)([123])(.+)t(?P<t>\d+)(.+)$")
+OUT_PATTERNS = {
+    "0001": MULTI_C,
+    "Overlay": MULTI_C,
+    "DynOverlay": SINGLE_C,
+    "mosaic": MULTI_C,
+    "patch_label": SINGLE_C,
+    "roi_label": SINGLE_C,
+}
+DEFAULT_TAG = "0001"
+
 
 def get_subdir_mapping(data_dir):
     """
@@ -84,6 +96,23 @@ def get_pattern(subdir, level=0):
         return "".join([fixed[0], t_block, fixed[1]])
 
 
+def get_out_pattern(subdir, tag):
+    try:
+        p = OUT_PATTERNS[tag]
+    except KeyError:
+        raise ValueError("Unknown output tag: %s" % tag)
+    fnames = [_ for _ in os.listdir(subdir) if _.endswith(".tif")]
+    if tag != "0001":
+        fnames = [_ for _ in fnames
+                  if os.path.splitext(_)[0].endswith("_" + tag)]
+    t_block, fixed = get_block_info(fnames, p)
+    if p is SINGLE_C:
+        return "".join([fixed[0], t_block, fixed[1]])
+    else:
+        assert p is MULTI_C
+        return "".join([fixed[0], "<1-3>", fixed[1], t_block, fixed[2]])
+
+
 def write_screen(data_dir, plate, outf, screen=None, level=0):
     kwargs = {"screen_name": screen} if screen else {}
     writer = ScreenWriter(plate, ROWS, COLUMNS, FIELDS, **kwargs)
@@ -107,14 +136,41 @@ def write_screen(data_dir, plate, outf, screen=None, level=0):
     writer.write(outf)
 
 
+def write_out_screen(data_dir, plate, outf, screen=None, tag=DEFAULT_TAG):
+    kwargs = {"screen_name": screen} if screen else {}
+    writer = ScreenWriter(plate, ROWS, COLUMNS, FIELDS, **kwargs)
+    subd_map = get_subdir_mapping(data_dir)
+    extra_kv = {"AxisTypes": "CT"}
+    for idx in xrange(ROWS * COLUMNS):
+        field_values = []
+        try:
+            subdir = os.path.join(data_dir, subd_map[idx], "Sample1")
+        except KeyError:
+            pass
+        else:
+            if tag == "0001":
+                subdir = os.path.join(subdir, tag)
+            else:
+                subdir = os.path.join(subdir, "results")
+            for run in xrange(FIELDS):
+                pattern = get_out_pattern(subdir, tag)
+                field_values.append(os.path.join(subdir, pattern))
+        writer.add_well(field_values, extra_kv=extra_kv)
+    writer.write(outf)
+
+
 def parse_cl(argv):
     parser = ArgumentParser()
     parser.add_argument("dir", metavar="DIR", help="dir")
     parser.add_argument("-o", "--output", metavar="FILE", help="output file")
     parser.add_argument("-p", "--plate", metavar="PLATE", help="plate name")
     parser.add_argument("-s", "--screen", metavar="SCREEN", help="screen name")
-    parser.add_argument("-l", "--level", metavar="INT", type=int, default=0,
-                        help="subdirectory level")
+    g = parser.add_mutually_exclusive_group()
+    g.add_argument("-l", "--level", metavar="INT", type=int, default=0,
+                   help="subdirectory level (input datasets)")
+    g.add_argument("-t", "--tag", choices=sorted(OUT_PATTERNS),
+                   metavar="|".join(sorted(OUT_PATTERNS)),
+                   help="dataset tag (output datasets)")
     return parser.parse_args(argv[1:])
 
 
@@ -125,9 +181,14 @@ def main(argv):
         print "writing to %s" % args.output
     else:
         outf = sys.stdout
-    write_screen(
-        args.dir, args.plate, outf, screen=args.screen, level=args.level
-    )
+    if args.tag:
+        write_out_screen(
+            args.dir, args.plate, outf, screen=args.screen, tag=args.tag
+        )
+    else:
+        write_screen(
+            args.dir, args.plate, outf, screen=args.screen, level=args.level
+        )
     if outf is not sys.stdout:
         outf.close()
 
