@@ -169,7 +169,7 @@ def write_out_screen(data_dir, plate, outf, screen=None, tag=DEFAULT_TAG):
     kwargs = {"screen_name": screen} if screen else {}
     writer = ScreenWriter(plate, ROWS, COLUMNS, FIELDS, **kwargs)
     subd_map = get_subdir_mapping(data_dir)
-    extra_kv = {"AxisTypes": "CT"}
+    extra_kv = {"AxisTypes": "CT"} if OUT_PATTERNS[tag] is MULTI_C else None
     for idx in xrange(ROWS * COLUMNS):
         field_values = []
         try:
