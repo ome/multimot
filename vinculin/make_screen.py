@@ -4,6 +4,7 @@ import sys
 import os
 import re
 from argparse import ArgumentParser
+from collections import Counter
 
 try:
     from pyidr.screenio import ScreenWriter
@@ -55,6 +56,33 @@ def get_subdir_mapping(data_dir):
     return dict(zip(cell_ids, subdirs))
 
 
+def crop_t_dim(t_indices):
+    """
+    Filter t_indices, keeping only the longest streak of consecutive
+    values for which all channels have a file. Assumes fixed width.
+
+    NOTE: in practice, only the *_Overlay* dataset has missing files.
+    """
+    c = Counter(t_indices)
+    max_count = max(c.itervalues())
+    uniq_indices = sorted(c)
+    start, stop = uniq_indices[0], uniq_indices[-1]
+    width = len(stop)
+    fmt = "%%0%dd" % width
+    intervals = [[]]
+    for i in xrange(int(start), int(stop) + 1):
+        idx = fmt % i
+        if c[idx] == max_count:
+            intervals[-1].append(idx)
+        else:
+            intervals.append([])
+    intervals[-1].append(stop)
+    longest = max(intervals, key=len)
+    if len(longest) < len(c):
+        sys.stderr.write("WARNING: some channels had missing files\n")
+    return longest
+
+
 def get_block_info(fnames, re_pattern):
     """
     All filename patterns have fixed (i.e., that do not change from
@@ -75,6 +103,7 @@ def get_block_info(fnames, re_pattern):
         assert g[::2] == fixed
     # check for fixed-width
     assert len(set(map(len, t_indices))) == 1
+    t_indices = crop_t_dim(t_indices)
     t_block = "t<%s-%s>" % (min(t_indices), max(t_indices))
     return t_block, fixed
 
