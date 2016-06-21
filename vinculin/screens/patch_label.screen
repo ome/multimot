@@ -16,157 +16,157 @@ Column = 1
 [Well 2]
 Row = 0
 Column = 2
-Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 2/Sample1/results/0001_mode2_z000_t<000-121>_f000_patch_label.tif
+Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 2/Sample1/patch_label/0001_mode2_z000_t<000-121>_f000_patch_label.tif
 
 [Well 3]
 Row = 0
 Column = 3
-Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 3/Sample1/results/0001_mode2_z000_t<000-133>_f000_patch_label.tif
+Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 3/Sample1/patch_label/0001_mode2_z000_t<000-133>_f000_patch_label.tif
 
 [Well 4]
 Row = 0
 Column = 4
-Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 4/Sample1/results/0001_mode2_z000_t<000-179>_f000_patch_label.tif
+Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 4/Sample1/patch_label/0001_mode2_z000_t<000-179>_f000_patch_label.tif
 
 [Well 5]
 Row = 0
 Column = 5
-Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 5/Sample1/results/0001_mode2_z000_t<000-144>_f000_patch_label.tif
+Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 5/Sample1/patch_label/0001_mode2_z000_t<000-144>_f000_patch_label.tif
 
 [Well 6]
 Row = 0
 Column = 6
-Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 6/Sample1/results/0001_mode2_z000_t<000-071>_f000_patch_label.tif
+Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 6/Sample1/patch_label/0001_mode2_z000_t<000-071>_f000_patch_label.tif
 
 [Well 7]
 Row = 0
 Column = 7
-Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 7/Sample1/results/0001_mode2_z000_t<000-165>_f000_patch_label.tif
+Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 7/Sample1/patch_label/0001_mode2_z000_t<000-165>_f000_patch_label.tif
 
 [Well 8]
 Row = 0
 Column = 8
-Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 8/Sample1/results/0001_mode2_z000_t<000-110>_f000_patch_label.tif
+Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 8/Sample1/patch_label/0001_mode2_z000_t<000-110>_f000_patch_label.tif
 
 [Well 9]
 Row = 0
 Column = 9
-Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 9/Sample1/results/0001_mode2_z000_t<000-102>_f000_patch_label.tif
+Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 9/Sample1/patch_label/0001_mode2_z000_t<000-102>_f000_patch_label.tif
 
 [Well 10]
 Row = 0
 Column = 10
-Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 10/Sample1/results/0001_mode2_z000_t<000-065>_f000_patch_label.tif
+Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 10/Sample1/patch_label/0001_mode2_z000_t<000-065>_f000_patch_label.tif
 
 [Well 11]
 Row = 0
 Column = 11
-Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 11/Sample1/results/0001_mode2_z000_t<000-114>_f000_patch_label.tif
+Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 11/Sample1/patch_label/0001_mode2_z000_t<000-114>_f000_patch_label.tif
 
 [Well 12]
 Row = 1
 Column = 0
-Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 12/Sample1/results/0001_mode2_z000_t<000-031>_f000_patch_label.tif
+Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 12/Sample1/patch_label/0001_mode2_z000_t<000-031>_f000_patch_label.tif
 
 [Well 13]
 Row = 1
 Column = 1
-Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 13/Sample1/results/0001_mode2_z000_t<000-038>_f000_patch_label.tif
+Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 13/Sample1/patch_label/0001_mode2_z000_t<000-038>_f000_patch_label.tif
 
 [Well 14]
 Row = 1
 Column = 2
-Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 14/Sample1/results/0001_mode2_z000_t<000-043>_f000_patch_label.tif
+Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 14/Sample1/patch_label/0001_mode2_z000_t<000-043>_f000_patch_label.tif
 
 [Well 15]
 Row = 1
 Column = 3
-Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 15/Sample1/results/0001_mode2_z000_t<000-077>_f000_patch_label.tif
+Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 15/Sample1/patch_label/0001_mode2_z000_t<000-077>_f000_patch_label.tif
 
 [Well 16]
 Row = 1
 Column = 4
-Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 16/Sample1/results/0001_mode2_z000_t<000-055>_f000_patch_label.tif
+Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 16/Sample1/patch_label/0001_mode2_z000_t<000-055>_f000_patch_label.tif
 
 [Well 17]
 Row = 1
 Column = 5
-Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 17/Sample1/results/0001_mode2_z000_t<000-117>_f000_patch_label.tif
+Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 17/Sample1/patch_label/0001_mode2_z000_t<000-117>_f000_patch_label.tif
 
 [Well 18]
 Row = 1
 Column = 6
-Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 18/Sample1/results/0001_mode2_z000_t<000-294>_f000_patch_label.tif
+Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 18/Sample1/patch_label/0001_mode2_z000_t<000-294>_f000_patch_label.tif
 
 [Well 19]
 Row = 1
 Column = 7
-Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 19/Sample1/results/0001_mode2_z000_t<000-123>_f000_patch_label.tif
+Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 19/Sample1/patch_label/0001_mode2_z000_t<000-123>_f000_patch_label.tif
 
 [Well 20]
 Row = 1
 Column = 8
-Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 20/Sample1/results/0001_mode2_z000_t<000-066>_f000_patch_label.tif
+Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 20/Sample1/patch_label/0001_mode2_z000_t<000-066>_f000_patch_label.tif
 
 [Well 21]
 Row = 1
 Column = 9
-Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 21/Sample1/results/0001_mode2_z000_t<000-126>_f000_patch_label.tif
+Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 21/Sample1/patch_label/0001_mode2_z000_t<000-126>_f000_patch_label.tif
 
 [Well 22]
 Row = 1
 Column = 10
-Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 22/Sample1/results/0001_mode2_z000_t<000-028>_f000_patch_label.tif
+Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 22/Sample1/patch_label/0001_mode2_z000_t<000-028>_f000_patch_label.tif
 
 [Well 23]
 Row = 1
 Column = 11
-Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 23/Sample1/results/0001_mode2_z000_t<000-064>_f000_patch_label.tif
+Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 23/Sample1/patch_label/0001_mode2_z000_t<000-064>_f000_patch_label.tif
 
 [Well 24]
 Row = 2
 Column = 0
-Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 24/Sample1/results/0001_mode2_z000_t<000-099>_f000_patch_label.tif
+Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 24/Sample1/patch_label/0001_mode2_z000_t<000-099>_f000_patch_label.tif
 
 [Well 25]
 Row = 2
 Column = 1
-Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 25/Sample1/results/0001_mode2_z000_t<000-096>_f000_patch_label.tif
+Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 25/Sample1/patch_label/0001_mode2_z000_t<000-096>_f000_patch_label.tif
 
 [Well 26]
 Row = 2
 Column = 2
-Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 26/Sample1/results/0001_mode2_z000_t<000-392>_f000_patch_label.tif
+Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 26/Sample1/patch_label/0001_mode2_z000_t<000-392>_f000_patch_label.tif
 
 [Well 27]
 Row = 2
 Column = 3
-Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 27/Sample1/results/0001_mode2_z000_t<000-091>_f000_patch_label.tif
+Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 27/Sample1/patch_label/0001_mode2_z000_t<000-091>_f000_patch_label.tif
 
 [Well 28]
 Row = 2
 Column = 4
-Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 28/Sample1/results/0001_mode2_z000_t<000-110>_f000_patch_label.tif
+Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 28/Sample1/patch_label/0001_mode2_z000_t<000-110>_f000_patch_label.tif
 
 [Well 29]
 Row = 2
 Column = 5
-Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 29/Sample1/results/0001_mode2_z000_t<000-132>_f000_patch_label.tif
+Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 29/Sample1/patch_label/0001_mode2_z000_t<000-132>_f000_patch_label.tif
 
 [Well 30]
 Row = 2
 Column = 6
-Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 30/Sample1/results/0001_mode2_z000_t<000-155>_f000_patch_label.tif
+Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 30/Sample1/patch_label/0001_mode2_z000_t<000-155>_f000_patch_label.tif
 
 [Well 31]
 Row = 2
 Column = 7
-Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 31/Sample1/results/0001_mode2_z000_t<000-104>_f000_patch_label.tif
+Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 31/Sample1/patch_label/0001_mode2_z000_t<000-104>_f000_patch_label.tif
 
 [Well 32]
 Row = 2
 Column = 8
-Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 32/Sample1/results/0001_mode2_z000_t<000-108>_f000_patch_label.tif
+Field_0 = /multimot/filesets/vinculin/20140110Dataset/TV 30 sec PAD output 20140110/TV 30 sec cell 32/Sample1/patch_label/0001_mode2_z000_t<000-108>_f000_patch_label.tif
 
 [Well 33]
 Row = 2
